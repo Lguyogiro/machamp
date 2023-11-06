@@ -189,8 +189,10 @@ def to_string(full_data: List[Any],
 
         return '\n'.join(['\t'.join(token_info) for token_info in full_data]) + '\n'
 
-def write_pred(out_file, batch, device, dev_dataset, model, dataset_config, raw_text=False, conn = '=', sep = '|'):
+def write_pred(out_file, batch, device, dev_dataset, model, dataset_config, raw_text=False, conn = '=', sep = '|', no_labels=False):
     enc_batch = prep_batch(batch, device, dev_dataset, raw_text)
+    if no_labels is True:
+        enc_batch["golds"] = {}
     out_dict = model.get_output_labels(enc_batch['token_ids'], enc_batch['golds'], enc_batch['seg_ids'],
                                         enc_batch['offsets'], enc_batch['subword_mask'], enc_batch['task_masks'], enc_batch['word_mask'], enc_batch['dataset_ids'], raw_text)
     
@@ -204,7 +206,7 @@ def write_pred(out_file, batch, device, dev_dataset, model, dataset_config, raw_
                             model.vocabulary, enc_batch['token_ids'][i], )
         out_file.write(output + '\n')
 
-def predict_with_paths(model, input_path, output_path, dataset, batch_size, raw_text, device, conn = '=', sep = '|', multi_threshold=None):
+def predict_with_paths(model, input_path, output_path, dataset, batch_size, raw_text, device, conn = '=', sep = '|', multi_threshold=None, no_labels=False):
     model.eval()
     model.reset_metrics()
     if multi_threshold != None:

@@ -411,7 +411,7 @@ class MachampModel(torch.nn.Module):
             mlm_out_tok_merged = myutils.apply_scalar(mlm_out_tok, self.layers[tok_task], self.scalars[tok_task])
             tok_pred = \
                 self.decoders[tok_task].get_output_labels(mlm_out_tok_merged, subword_mask[:, self.num_special_tokens:],
-                                                          golds[tok_task])['word_labels']
+                                                          golds.get(tok_task))['word_labels']
 
             # This could be done more efficient if a torch tensor was retrieved
             tok_indices = torch.zeros((mlm_out_tok_merged.shape[0], mlm_out_tok_merged.shape[1]), dtype=torch.long,
